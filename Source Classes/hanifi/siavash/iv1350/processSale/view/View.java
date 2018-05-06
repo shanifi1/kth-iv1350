@@ -16,14 +16,23 @@ public class View {
 		System.out.println();
 		System.out.println("Change: " + change.getChangeAmount().getCashAmount());
 	}
+
+	private void presentDescription(ItemDTO itemDTO) {
+		System.out.println();
+		System.out.println("(Item registered)" + itemDTO.toString() + ", " + itemDTO.getPrice() + ":-");
+	}
 	
 	private void presentPaymentInfo(Payment payment) {
 		System.out.println();
 		System.out.println("Price(tax included): " + payment.getTotalTaxInc());
 	}	
 	
+	private void notifyNewSaleStarted() {
+		System.out.println("New sale started.");
+	}	
+	
 	/**
-	 * Creates a new instance and displays information about changes in the ongoing sale
+	 * Creates a new instance
 	 * 
 	 * @param controllerParam The controller that is used for all operations.
 	 */
@@ -33,47 +42,33 @@ public class View {
 	}
 	
 	/**
-	 * View-Output: Presents the description of an <code>Item</code>
-	 * @param itemDTO The <code>Item</code>
-	 */
-	private void presentDescription(ItemDTO itemDTO) {
-		System.out.println();
-		System.out.println("(Item registered)" + itemDTO.toString());
-	}
-	
-
-	/**
-	 * Presents the changes
-	 *
-	public void presentSaleStateChanges() {
-		controller.getSaleInformation();
-	}*/
-	
-	/**
-	 * A hard-coded simulation of the view's reaction to the cashier's signaling to start a new sale.
+	 * Starts a new sale and notifies cashier. 
 	 */
 	public void cashierStartsNewSale() {
 		controller.startSale();
-		System.out.println("New sale started.");
+		notifyNewSaleStarted();
 	}
 	
 	/**
-	 * A hard-coded simulation of the view's reaction to the cashier's act of scanning an item.
-	 * @param itemId The item-identifier
+	 * Register an Item and presents description.
+	 * 
+	 * @param itemId The item-id
 	 */
 	public void cashierScansItem(int itemId) {
 		presentDescription(controller.registerItem(itemId));
 	}
 	
 	/**
-	 * A hard-coded simulation of the view's reaction to the cashier's signaling that all the items have been registered
+	 * Completes the sale and presents information about the amount required from the customer.
 	 */
 	public void cashierSignalsAllItemsRegistered(){
 		presentPaymentInfo(controller.allItemsRegistered());
 	}
 	
 	/**
-	 * A hard-coded simulation of the view's reaction to the cashier's signaling that the sale is to be completed.
+	 * Completes the sale and presents the information about the amount
+	 * of change the cashier is to give back to the customer
+	 * 
 	 * @param cashAmount The amount of cash received from the customer.
 	 */
 	public void cashierSignalsCompleteSale(double cashAmount) {	
@@ -81,14 +76,14 @@ public class View {
 	}
 	
 	/**
-	 * 
+	 *	Hard-coded input simulating the cashiers interaction with the view.
 	 */
 	public void sampleExecution() {
 		this.cashierStartsNewSale();
 		this.cashierScansItem(647474);
 		this.cashierScansItem(576483);
 		this.cashierSignalsAllItemsRegistered();
-		this.cashierSignalsCompleteSale(1000);
+		this.cashierSignalsCompleteSale(50);
 	}
 	
 	
