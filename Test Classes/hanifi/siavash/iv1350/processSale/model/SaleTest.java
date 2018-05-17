@@ -33,7 +33,7 @@ public class SaleTest {
 	}
 	
 	@Test
-	public void testGetLastRegisteredItem(){
+	public void testGetLastRegisteredItem() throws InvalidItemException{
 		this.sale.registerItem(ItemDB.Banana);
 		ItemDTO expResult = ItemDB.Banana;
 		ItemDTO result = this.sale.getListOfItems().lastElement();

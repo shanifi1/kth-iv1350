@@ -1,7 +1,12 @@
 package hanifi.siavash.iv1350.processSale.view;
 import hanifi.siavash.iv1350.processSale.controller.Controller;
+import hanifi.siavash.iv1350.processSale.controller.ExternalSystemFailureException;
+import hanifi.siavash.iv1350.processSale.controller.OperationFailedException;
 import hanifi.siavash.iv1350.processSale.data.ItemDTO;
+import hanifi.siavash.iv1350.processSale.dbhandler.ItemDBHandlerException;
+import hanifi.siavash.iv1350.processSale.logging.LogHandler;
 import hanifi.siavash.iv1350.processSale.model.Change;
+import hanifi.siavash.iv1350.processSale.model.InvalidItemException;
 import hanifi.siavash.iv1350.processSale.model.Payment;
 /**
 * This program has no view, instead, this class is a
@@ -9,79 +14,87 @@ import hanifi.siavash.iv1350.processSale.model.Payment;
 */
 public class View {
 	
-	private Controller controller;
+	private Controller controller = null;
+	private ErrorMessageHandler errorMessageHandler = null;
+	private LogHandler logHandler = null;
 	
 	private void presentChangeInfo(Change change) {
-		// TODO Auto-generated method stubs
-		System.out.println();
 		System.out.println("Change: " + change.getChangeAmount().getCashAmount());
+		System.out.println();
 	}
 
 	private void presentDescription(ItemDTO itemDTO) {
-		System.out.println();
 		System.out.println("(Item registered)" + itemDTO.toString() + ", " + itemDTO.getPrice() + ":-");
+		System.out.println();
 	}
 	
 	private void presentPaymentInfo(Payment payment) {
-		System.out.println();
 		System.out.println("Price(tax included): " + payment.getTotalTaxInc());
+		System.out.println();
 	}	
 	
 	private void notifyNewSaleStarted() {
 		System.out.println("New sale started.");
-	}	
-	
-	/**
-	 * Creates a new instance
-	 * 
-	 * @param controllerParam The controller that is used for all operations.
-	 */
-	public View(Controller controller) {
-		// TODO Auto-generated constructor stub
-		this.controller = controller;
 	}
 	
-	/**
-	 * Starts a new sale and notifies cashier. 
-	 */
-	public void cashierStartsNewSale() {
+	private void handleException(String userErrorMessage, Exception exception) { //Duplicated code ->Extract Method
+		 errorMessageHandler.showErrorMsg(userErrorMessage); 
+		 logHandler.logException(exception);
+	}
+	
+	private void cashierStartsNewSale() {
 		controller.startSale();
 		notifyNewSaleStarted();
 	}
-	
-	/**
-	 * Register an Item and presents description.
-	 * 
-	 * @param itemId The item-id
-	 */
-	public void cashierScansItem(int itemId) {
+
+	private void cashierScansItem(int itemId) {
+		try {
 		presentDescription(controller.registerItem(itemId));
+		}
+		catch(OperationFailedException operationFailedException){
+			handleException("Failed to register item with id: " + ((InvalidItemException) operationFailedException.getCause()).getItemId(), operationFailedException);
+		}
+		catch(ExternalSystemFailureException externalSystemFailureException) {
+			handleException(externalSystemFailureException.getMessage() + ", contact admin.", externalSystemFailureException);
+		}
 	}
 	
-	/**
-	 * Completes the sale and presents information about the amount required from the customer.
-	 */
-	public void cashierSignalsAllItemsRegistered(){
+	private void cashierSignalsAllItemsRegistered(){
 		presentPaymentInfo(controller.allItemsRegistered());
 	}
 	
-	/**
-	 * Completes the sale and presents the information about the amount
-	 * of change the cashier is to give back to the customer
-	 * 
-	 * @param cashAmount The amount of cash received from the customer.
-	 */
-	public void cashierSignalsCompleteSale(double cashAmount) {	
+	private void cashierSignalsCompleteSale(double cashAmount) {	
 		presentChangeInfo(controller.completeSale(cashAmount));
 	}
 	
 	/**
-	 *	Hard-coded input simulating the cashiers interaction with the view.
+	 * Creates a new instance
+	 * @param controllerParam The controller that is used for all operations.
 	 */
-	public void sampleExecution() {
+	public View(Controller controller) {
+		this.controller = controller;
+		this.errorMessageHandler = new ErrorMessageHandler();
+		this.logHandler = new LogHandler();
+	}
+	
+	
+	/**
+	 *	Hard-coded input simulating the cashiers interaction with the view.
+	 * @throws OperationFailedException If a cashier-made operation fails.
+	 */
+	public void sampleExecution() throws OperationFailedException {
+		int itemId;
 		this.cashierStartsNewSale();
-		this.cashierScansItem(647474);
-		this.cashierScansItem(576483);
+		itemId=647474; //itemId for a banana
+		this.cashierScansItem(itemId);
+		itemId=576483; //itemId for a strawberry
+		this.cashierScansItem(itemId);
+		itemId=123415; //example of an invalid itemId
+		this.cashierScansItem(itemId);
+		itemId=576483; //itemId for a strawberry
+		this.cashierScansItem(itemId);
+		itemId=666; //itemId which triggers the simulated database failure
+		this.cashierScansItem(itemId);
 		this.cashierSignalsAllItemsRegistered();
 		this.cashierSignalsCompleteSale(50);
 	}

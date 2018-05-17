@@ -2,9 +2,11 @@ package hanifi.siavash.iv1350.processSale.controller;
 import hanifi.siavash.iv1350.processSale.data.ItemDTO;
 import hanifi.siavash.iv1350.processSale.data.SaleDTO;
 import hanifi.siavash.iv1350.processSale.dbhandler.ItemDBHandler;
+import hanifi.siavash.iv1350.processSale.dbhandler.ItemDBHandlerException;
 import hanifi.siavash.iv1350.processSale.externalSystemCommunication.*;
 import hanifi.siavash.iv1350.processSale.model.CashAmount;
 import hanifi.siavash.iv1350.processSale.model.Change;
+import hanifi.siavash.iv1350.processSale.model.InvalidItemException;
 import hanifi.siavash.iv1350.processSale.model.Payment;
 import hanifi.siavash.iv1350.processSale.model.Reciept;
 import hanifi.siavash.iv1350.processSale.model.Sale;
@@ -25,12 +27,18 @@ public class Controller {
 	private Payment payment = null;
 	
 	/**
-	 * Fetches the <code>Item</code>-object
-	 * @param itemId the <code>integer</code> identifier for the item to be fetched.
-	 * @return The found <code>Item</code>
+	 * 
+	 * @param itemId
+	 * @return
+	 * @throws ExternalSystemFailureException If the dbhandler cannot contact the database
 	 */
 	private ItemDTO searchItem(int itemId){
-		return itemDBHandler.fetchItem(itemId);
+		try {
+			return itemDBHandler.fetchItem(itemId);
+		}
+		catch(ItemDBHandlerException itemDBHandlerException) {
+			throw new ExternalSystemFailureException(itemDBHandlerException,"Failed to fetch the item from the database");
+		}
 	}
 	
 	private Change calculateChange(double cashAmount) {
@@ -51,12 +59,11 @@ public class Controller {
 	 * @param itemDBHandler Reference to the item registry.
 	 * @param handleCreator Contains the references to the handlers for the external systems.
 	 */
-	public Controller(ItemDBHandler itemDBHandler, HandleCreator handleCreator) {
+	public Controller(ItemDBHandler itemDBHandler, HandleCreator handleCreator){
 		this.itemDBHandler = itemDBHandler;
 		this.extSysHandler =  handleCreator.getExtSysHandler();
 		this.invSysHandler =  handleCreator.getInvSysHandler();
 		this.printerHandler = handleCreator.getPrinterHandler();
-		
 	}
 	
 	
@@ -73,10 +80,16 @@ public class Controller {
 	 * Registers an item to the ongoing sale.
 	 * @param itemId 
 	 * @return Reference to the registered<code>Item</code>.
+	 * @throws OperationFailedException If the fetching of an item fails
 	 */
-	public ItemDTO registerItem(int itemId) {
-		sale.registerItem(searchItem(itemId));
-		return searchItem(itemId);		
+	public ItemDTO registerItem(int itemId) throws OperationFailedException{
+		try {
+			sale.registerItem(searchItem(itemId)); /*ADDED FOR SEMINAR 4*/
+			return searchItem(itemId);
+		}
+		catch(InvalidItemException invalidItemException){
+			throw new OperationFailedException(invalidItemException);
+		}
 	}
 	
 	/**

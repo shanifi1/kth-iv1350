@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import hanifi.siavash.iv1350.processSale.data.ItemDB;
 import hanifi.siavash.iv1350.processSale.data.ItemDTO;
+import hanifi.siavash.iv1350.processSale.model.InvalidItemException;
 
 public class ItemDBHandlerTest {
 	
@@ -28,21 +29,21 @@ public class ItemDBHandlerTest {
 	}
 
 	@Test
-	public void testFetchItemInvalidId() {
+	public void testFetchItemInvalidId() throws InvalidItemException {
 		int invalidItemIDExample = 0;
 		ItemDTO result =  this.itemDBHandler.fetchItem(invalidItemIDExample);
 		assertNull("Invalid Id not returning null", result);	
 	}
 	
 	@Test
-	public void testFetchItemBanana() {
+	public void testFetchItemBanana() throws InvalidItemException {
 		ItemDTO expResult = ItemDB.Banana;
 		ItemDTO result = this.itemDBHandler.fetchItem(itemIDBanana);
 		assertEquals("Fetching of item banana failed", expResult, result);
 		}
 	
 	@Test
-	public void testFetchItemStrawberry() {
+	public void testFetchItemStrawberry() throws InvalidItemException {
 		ItemDTO expResult = ItemDB.Strawberry;
 		ItemDTO result = this.itemDBHandler.fetchItem(itemIDStrawberry);
 		assertEquals("Fetching of item strawberry failed", expResult, result);	

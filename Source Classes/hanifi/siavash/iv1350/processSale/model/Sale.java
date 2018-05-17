@@ -26,19 +26,20 @@ public class Sale {
 	/**
 	 * Registers an item to the ongoing sale.
 	 * @param scannedItem
+	 * @throws InvalidItemException If an attempt to registar an invalid item is made.
 	 */
-	public void registerItem(ItemDTO scannedItem) {
+	public void registerItem(ItemDTO scannedItem) throws InvalidItemException {/*ADDED FOR SEMINAR 4*/
+		if(!scannedItem.isValid())
+			throw new InvalidItemException(scannedItem.getId()); /*ADDED FOR SEMINAR 4*/
 		listOfItems.addElement(scannedItem);
 		calculateRunningTotal();
 	}
 
 	public double getRunningTotal() {
-		// TODO Auto-generated method stub
 		return this.runningTotal;
 	}
 
 	public Vector<ItemDTO> getListOfItems() {
-		// TODO Auto-generated method stub
 		return this.listOfItems;
 	}
 	
