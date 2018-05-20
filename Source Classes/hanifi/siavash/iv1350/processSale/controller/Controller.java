@@ -1,4 +1,6 @@
 package hanifi.siavash.iv1350.processSale.controller;
+import java.util.Vector;
+
 import hanifi.siavash.iv1350.processSale.data.ItemDTO;
 import hanifi.siavash.iv1350.processSale.data.SaleDTO;
 import hanifi.siavash.iv1350.processSale.dbhandler.ItemDBHandler;
@@ -10,6 +12,7 @@ import hanifi.siavash.iv1350.processSale.model.InvalidItemException;
 import hanifi.siavash.iv1350.processSale.model.Payment;
 import hanifi.siavash.iv1350.processSale.model.Reciept;
 import hanifi.siavash.iv1350.processSale.model.Sale;
+import hanifi.siavash.iv1350.processSale.model.SaleObserver;
 import hanifi.siavash.iv1350.processSale.model.Tax;
 
 /**
@@ -25,6 +28,7 @@ public class Controller {
 	private InventorySystemHandler invSysHandler = null;
 	private PrinterHandler printerHandler = null;
 	private Payment payment = null;
+	private Vector<SaleObserver> saleObservers = new Vector<>();
 	
 	/**
 	 * 
@@ -53,6 +57,7 @@ public class Controller {
 		return new Reciept(loggedSale, this.payment, change);
 	}
 	
+
 	/**
 	 * Creates a new instance.
 	 * 
@@ -67,12 +72,17 @@ public class Controller {
 	}
 	
 	
+	public void addSaleObserver(SaleObserver saleObserver) {
+		this.saleObservers.add(saleObserver);
+	}
+	
 	/**
 	 * Initializes a new sale.
 	 *  
 	 */
 	public void startSale() {
 		this.sale = new Sale();
+		this.sale.addSaleObservers(saleObservers);
 	}
 	
 	
@@ -109,13 +119,13 @@ public class Controller {
 	 * @return
 	 */
 	public Change completeSale(double cashAmount) {
-		// TODO Auto-generated method stub
 		Change change = this.calculateChange(cashAmount);
 		SaleDTO loggedSale = this.logSale(sale);
 		Reciept reciept = this.generateReceipt(loggedSale, change);
 		this.printerHandler.printReceipt(reciept);
 		this.extSysHandler.addSaleTransaction(loggedSale, this.payment);
 		this.invSysHandler.updateInventory(loggedSale);
+		sale.completeSale();
 		return change;
 	}
 }

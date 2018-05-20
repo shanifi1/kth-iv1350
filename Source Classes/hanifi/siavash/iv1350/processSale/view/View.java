@@ -13,28 +13,30 @@ import hanifi.siavash.iv1350.processSale.model.Payment;
 * placeholder for the entire view.
 */
 public class View {
-	
 	private Controller controller = null;
 	private ErrorMessageHandler errorMessageHandler = null;
 	private LogHandler logHandler = null;
 	
 	private void presentChangeInfo(Change change) {
+		System.out.println("*************");
 		System.out.println("Change: " + change.getChangeAmount().getCashAmount());
-		System.out.println();
+		System.out.println("*************");
 	}
 
 	private void presentDescription(ItemDTO itemDTO) {
 		System.out.println("(Item registered)" + itemDTO.toString() + ", " + itemDTO.getPrice() + ":-");
-		System.out.println();
 	}
 	
 	private void presentPaymentInfo(Payment payment) {
+		System.out.println();
 		System.out.println("Price(tax included): " + payment.getTotalTaxInc());
 		System.out.println();
 	}	
 	
 	private void notifyNewSaleStarted() {
+		System.out.println("******************");
 		System.out.println("New sale started.");
+		System.out.println("******************");
 	}
 	
 	private void handleException(String userErrorMessage, Exception exception) { //Duplicated code ->Extract Method
@@ -75,28 +77,51 @@ public class View {
 		this.controller = controller;
 		this.errorMessageHandler = new ErrorMessageHandler();
 		this.logHandler = new LogHandler();
+		controller.addSaleObserver(new TotalRevenueView()); //NULLPOINTERException
 	}
 	
-	
-	/**
-	 *	Hard-coded input simulating the cashiers interaction with the view.
-	 * @throws OperationFailedException If a cashier-made operation fails.
-	 */
-	public void sampleExecution() throws OperationFailedException {
+	private  void firstSaleSampleExecution() {
 		int itemId;
 		this.cashierStartsNewSale();
 		itemId=647474; //itemId for a banana
 		this.cashierScansItem(itemId);
 		itemId=576483; //itemId for a strawberry
 		this.cashierScansItem(itemId);
-		itemId=123415; //example of an invalid itemId
+		//itemId=123415; //example of an invalid itemId
+		//this.cashierScansItem(itemId);
+		itemId=576483; //itemId for a strawberry
+		this.cashierScansItem(itemId);
+		//itemId=666; //itemId which triggers the simulated database failure
+		//this.cashierScansItem(itemId);
+		this.cashierSignalsAllItemsRegistered();
+		this.cashierSignalsCompleteSale(50);
+	}
+	private void secondSaleSampleExecution() {
+		int itemId;
+		this.cashierStartsNewSale();
+		itemId=647474; //itemId for a banana
 		this.cashierScansItem(itemId);
 		itemId=576483; //itemId for a strawberry
 		this.cashierScansItem(itemId);
-		itemId=666; //itemId which triggers the simulated database failure
-		this.cashierScansItem(itemId);
 		this.cashierSignalsAllItemsRegistered();
-		this.cashierSignalsCompleteSale(50);
+		this.cashierSignalsCompleteSale(20);
+	}
+	
+	/**
+	 *	Hard-coded input simulating the cashiers interaction with the view.
+	 * @throws OperationFailedException If a cashier-made operation fails.
+	 */
+	public void sampleExecution() throws OperationFailedException {
+		
+		/*
+		 * First sale
+		 */
+		firstSaleSampleExecution();
+		
+		/*
+		 * Second sale
+		 */
+		secondSaleSampleExecution();
 	}
 	
 	

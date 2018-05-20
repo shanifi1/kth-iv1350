@@ -15,9 +15,10 @@ public class ExternalAccountingSystemHandler {
 	 */
 	public void addSaleTransaction(SaleDTO loggedSale, Payment payment) {
 		// TODO Auto-generated method stub
-		System.out.println();
+		System.out.println("**********************************************************************");
 		System.out.println("External Accounting System: Sale transaction has been stored at date: " + "\n" + loggedSale.getDate().toString());
-		System.out.println("Debit(CashAccount): " + payment.getTotalTaxInc() + " Credit(Sale): " + payment.getTotalTaxExcl() + " Credit(Tax): " + payment.getTaxAmount());
+		System.out.println("Debit(CashAccount): " + payment.getTotalTaxInc() + " Credit(Revenue): " + payment.getTotalTaxExcl() + " Credit(Tax): " + payment.getTaxAmount());
+		System.out.println("**********************************************************************");
 	}
 	
 }

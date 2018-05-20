@@ -16,8 +16,9 @@ public class PrinterHandler {
 	 * @param reciept
 	 */
 	public void printReceipt(Reciept reciept) {
-		System.out.println();
+		System.out.println("***************************************");
 		System.out.println("Printer: Reciept successfully printed.");
+		System.out.println("***************************************");
 		
 	}
 
