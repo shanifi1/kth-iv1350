@@ -3,7 +3,6 @@ package hanifi.siavash.iv1350.processSale.view;
 import hanifi.siavash.iv1350.processSale.model.Sale;
 import hanifi.siavash.iv1350.processSale.model.SaleObserver;
 import hanifi.siavash.iv1350.processSale.model.Tax;
-import hanifi.siavash.iv1350.processSale.model.TotalRevenueAdapter;
 /**
  * The user interface presenting information about the total revenue since the program started.
  * @author Siavash
@@ -16,6 +15,7 @@ public class TotalRevenueView implements SaleObserver {
 	private void presentTotalRevenue() {
 		System.out.println("******************************");
 		System.out.println("Total revenue today: " + this.totalRevenue);
+		System.out.println("No. of sales: " + saleCounter);
 		System.out.println("******************************");
 	}
 	

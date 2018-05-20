@@ -1,8 +1,6 @@
 package hanifi.siavash.iv1350.processSale.model;
 import java.util.Vector;
 import hanifi.siavash.iv1350.processSale.data.ItemDTO;
-import hanifi.siavash.iv1350.processSale.view.TotalRevenue;
-
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
